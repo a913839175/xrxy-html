@@ -1,0 +1,35 @@
+table{
+	margin-left: 50px;
+	margin-top: 50px;
+}
+table th{
+	font-size: 20px;
+	font-weight: 700;
+	text-align: left;
+	padding: 20px 0 20px 0;
+}
+table tr td{
+	height: 30px;
+	line-height: 30px;
+	border: solid 1px #ccc;
+	padding-right:20px ;
+}
+#sub,#but{
+	position: relative;
+	top: 20px;
+	left: 50px;
+	width: 60px;
+	height: 30px;
+	border: solid 1px #1aaa31;
+	background-color: #1aaa31;
+	border-radius: 3px;	
+}
+.line{
+	position: relative;
+	top: 10px;
+	left: 10px;
+	padding-bottom: 10px;
+	width: 100%;
+	color: #999;
+	border-bottom: 1px #999 solid;
+}

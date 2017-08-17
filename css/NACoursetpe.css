@@ -1,0 +1,39 @@
+.content-right .content1{
+  position: relative;
+  top: 20px; 
+  left: 40px;
+}
+.content1 span{
+	position: relative;
+	left: 10px;
+	font-size: 16px;
+	margin-right: 20px;
+}
+#nct{
+	width: 140px;
+	height: 30px;
+}
+#sub,#but{
+	position: relative;
+	left: 20px;
+	width: 60px;
+	height: 30px;
+	border: solid 1px #1aaa31;
+	background-color: #1aaa31;
+	border-radius: 3px;	
+}
+.line{
+	position: relative;
+	top: 10px;
+	left: 10px;
+	padding-bottom: 10px;
+	width: 800px;
+	color: #999;
+	border-bottom: 1px #999 solid;
+}
+.form1{
+	width: 800px;
+	height: 50px;
+	line-height: 50px;
+	background-color: #fff;
+}

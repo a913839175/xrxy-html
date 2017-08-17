@@ -1,0 +1,33 @@
+table{
+	margin-left: 50px;
+	margin-top: 50px;
+	width: 800px;
+	height: 50px;
+	line-height: 50px;
+	background-color: #fff;
+}
+.addTable tr td{
+
+}
+#sub,#but{
+	position: relative;
+	 width:60px;
+	 height: 30px;
+	 background: #1aaa31;
+	 border: solid 1px #1aaa31;
+	 border-radius: 3px; 
+	 font-size: 18px;
+}
+.tishi{
+	padding-left: 48px;
+    padding-top: 10px;
+}
+.line{
+	position: relative;
+	top: 10px;
+	left: 10px;
+	padding-bottom: 10px;
+	width: 100%;
+	color: #999;
+	border-bottom: 1px #999 solid;
+}

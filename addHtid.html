@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>星融学院后台管理系统</title>
+        <link rel="stylesheet" type="text/css" href="css/reset.css"/>
+        <link rel="stylesheet" type="text/css" href="css/public.css"/>
+        <link rel="stylesheet" type="text/css" href="css/addHtid.css"/>
+    </head>
+    <body>
+        <div class="header">
+            <span class="header-title">星融书院后台管理</span>
+            <span class="Login"><a href="login.html">登录</a></span>
+            <div class="nav">
+                <span><a href="kcindex.html">课程管理</a></span>
+                <span><a href="Appindex.html" class="testb">角色管理</a></span>
+            </div>
+        </div>
+        <div class="content">
+            <div class="content-left">
+                <ul class="left-nav">
+                    <li><a href="Appindex.html">App角色</a></li>
+                    <li><a href="htindex.html" class="testa">后台角色</a></li>
+                </ul>
+            </div>
+            <div class="content-right">
+                <p class="line">后台管理>后台角色>新增角色</p></span>
+                <div class="content1">
+                    <table class="addTable">
+                        <tr>
+                            <td>账户名</td>
+                            <td><input type="text" name="htname" id="htname" value="" /></td><td>默认密码</td><td>666666</td> <td><input type="submit" name="sub" id="sub" value="确定" /></td>
+                        </tr>
+                    </table>
+                   
+                </div>
+            </div>
+        </div>
+    </body>
+    <script type="text/javascript" src="js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="js/jquery.json.js"></script>
+     <script type="text/javascript" src="js/ipconfig.js"></script>
+    <script type="text/javascript">
+        //单击取消返回到后台角色列表
+        function ref(){
+            window.location.href='./htindex.html';
+        }
+        //有无登陆
+        username=sessionStorage.getItem("dlusername");
+        var denglu=username+',你好<a href="index.html" style="padding-left:10px;color:#fff"><img src="images/loginOut.png" style="width:25px;height:25px;position:relative;top:7px;"></a>'
+        if(username == null){
+            window.location.href='./index.html';
+        }else{
+            $('.Login').html(denglu);
+        }
+        // 后台角色列表
+        $('#sub').on('click',function(){
+            var invokParams = new Object();
+            invokParams.userName = $('#htname').val();
+            if($('#htname').val() == ''){
+                alert('手机号不能为空')
+                return false
+            }
+            //是否重名
+            $.ajax({
+                url: ip+"/role/appCheck/"+$('#htname').val(),
+                dataType:'json',
+                type : 'get',
+                cache: false,
+                contentType:"application/json",
+                success: function(result){
+                    if(result.flag == false){
+                        $.ajax({
+                            url: ip+"/role/add",
+                            dataType:'json',
+                            data: $.toJSON(invokParams),
+                            type : 'post', 
+                            cache: false,
+                            contentType:"application/json",
+                            success: function(result){
+                                if(result.flag == true){
+                                    alert('添加成功');
+                                    setTimeout('ref()',500);
+                                }else{
+                                    alert(result.msg);
+                                    setTimeout('ref()',500);
+                                }
+                            }
+                        });
+                    }else{
+                        alert(result.msg)
+                    }
+                }
+            });
+	   
+        })
+         
+                        
+    </script>
+</html>

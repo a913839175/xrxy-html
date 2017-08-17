@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset="UTF-8">
+        <title>星融学院后台管理系统</title>
+        <link rel="stylesheet" type="text/css" href="css/reset.css" />
+        <link rel="stylesheet" type="text/css" href="css/public.css" />
+        <link rel="stylesheet" type="text/css" href="css/newAdd.css" />
+    </head>
+    <style>
+        img[src=""],img:not([src]){
+            opacity:0;
+        }
+    </style>   
+    <body>
+        <div class="header">
+            <span class="header-title">星融书院后台管理</span>
+            <span class="Login"><a href="login.html">登录</a></span>
+            <div class="nav">
+                <span><a href="kcindex.html" class="testb">课程管理</a></span>
+                <span><a href="Appindex.html">角色管理</a></span>
+            </div>
+        </div>
+        <div class="content">
+            <div class="content-left">
+                <ul class="left-nav">
+                    <li>
+                        <a href="kcindex.html" class="testa">全部课程</a>
+                    </li>
+                    <li>
+                        <a href="recommendation.html">推荐课程</a>
+                    </li>
+                    <li>
+                        <a href="courseType.html">课程类别</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="content-right">
+                <p class="line">课程管理>全部课程>修改课程</p>
+                <!--在这里添加提交的地址-->
+                <form name="form1" action="#" method="post" id="form1">
+                    <span class="title">&nbsp;&nbsp;&nbsp;&nbsp;基本内容</span>
+                    <div class="basic">
+
+                        <p>&nbsp;&nbsp;&nbsp;&nbsp;课程名称： <input type="text" name="courseName" id="courseName" class="courseName" onkeyup="checking()" /><span id="courseMsg"></span>
+                            是否推荐： <input type="radio" name="fn" class="fn" value="1" />是
+                            <input type="radio" name="fn" class="fn1" value="0" />否
+
+                            课程类别：
+                            <select name="courseType" id='kcgl'>
+
+                            </select>
+                        </p>
+                    </div>
+                   <div class="clearfix weizhi1">
+                        <p class="imgup fl">图片上传：<input type="button" name="upload_file" class="upload_file" value="选择文件"></p>
+                        <div class="imgShow fl" id="imgShow">
+                            <div class="imgShow1" id="imgShow1">
+                                <img src="" class="imgshowimg">
+                            </div>
+                            <input type="hidden" class="imgname" value="">
+                        </div>
+                    </div>
+                    <span class="title">&nbsp;&nbsp;&nbsp;&nbsp;章节</span>
+                    <div id="addcontainer">
+
+
+                    </div>
+                    <p class="newAdd">
+                        <input type="button" name="newAdd" id="newAdd" value="新增" />
+                        <!--此按钮实现单击添加一条序号列-->
+                    </p>
+                </form>
+
+            </div>
+        </div>
+        <div class="wenjianc">
+            <div class="wenjiancz">
+                <p class="fucetrue"><span>选取文件</span></p>
+                <div class="filedname">
+                    <p class='filedname1'>文件名</p>
+                    <input type="text" class="filedname2">
+                    <p class="filedname3">选择文件</p>
+                </div>
+                <div class="add">
+
+                </div>              
+            </div>
+        </div>
+
+    </body>
+    <script type="text/javascript" src="js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="js/jquery.json.js"></script>
+    <script type="text/javascript" src="js/ipconfig.js"></script>
+    <script type="text/javascript">
+        //有无登陆
+        username=sessionStorage.getItem("dlusername");
+        var denglu=username+',你好<a href="index.html" style="padding-left:10px;color:#fff"><img src="images/loginOut.png" style="width:25px;height:25px;position:relative;top:7px;"></a>'
+        if(username == null){
+            window.location.href='./index.html';
+        }else{
+            $('.Login').html(denglu);
+        }
+        // 基本内容里的课程列表
+        courseType='';
+        $.ajax({
+            url: ip+"/course/courseTypes",
+            type: "GET",
+            dataType: "json",
+            success: function(data) {
+                ids=[];
+                for(i=0;i<data.length;i++){
+                    courseType += '<option value='+data[i].id+'>'+data[i].name+'</option>';
+                    ids.push(data[i].id)
+                }
+                if(ids){ 
+                    sessionStorage.setItem("kclb", ids); 
+                }
+                $('#kcgl').append(courseType);
+
+            } 
+            
+        });
+        //  以下代码是单击新增章节,添加一行内容
+        $(function() {
+            $("#newAdd").click(function() {
+                $("#addcontainer").append('<form><p class="num1">&nbsp;&nbsp;&nbsp;&nbsp;序号： <input type="text" name="num" class="num"> 类型： <input type="radio" name="numType" class="checkShow" value="0" id="pdf" checked="checked"/>PDF <input type="radio" name="numType" class="checkShow2" value="1" id="video"/>视频<input type="radio" name="numType" value="2" class="checkShow3" id="exl"/> 考试 <span class="courseName1">章节名称： <input type="text" name="sName" class="sName" value="" style="width: 100px;"/></span> <input type="button" name="upload_file" class="upload_file" value="选择文件"/> <input type="button" name="upload" class="upload" value="提交"/> <input type="hidden" class="urlz" value=""/><input type="hidden" class="zkcid" value=""/><input type="hidden" class="fileId" value=""/><input type="hidden" class="qkcid" value=""/><input type="hidden" class="static" value="new"/><span class="del" title="单击删除这一行">X</span></p></form>');
+            })
+        })
+        //  ----下面这个是考试点击隐藏
+        $(document).on('click','.checkHide',function(){
+            $(this).next("span").css("display", "none");
+        })
+        // ----下面这个是点击显示
+        $(document).on('click','.checkShow',function(){
+            $(this).siblings(":hidden").css("display", ""); 
+        })
+        // 以下内容是添加课程的表单验证部分
+        function checking(){
+            if(document.getElementById('courseName').value.length>20){
+                document.getElementById('courseMsg').innerHTML="课程名称不能超过20字！";
+            }else{
+                document.getElementById('courseMsg').innerHTML="";
+            }
+        }
+        msg = sessionStorage.getItem("datat3");
+        // 新增课程接口
+        $(document).on('click','.upload',function(){
+            var static='';
+            var newstatic=$(this).parents('.num1').find('.static').val()
+            if(newstatic == 'new'){
+                static=0;
+                charid=$(this).parents('.num1').find('.qkcid').val();
+            }else{
+                static=1;
+                charid=$(this).parents('.num1').find('.zkcid').val()   
+            }
+            if($(this).parents('.num1').find('.num').val().length >4){
+                alert('序号不能大于四位');
+                return false;
+            }
+            if($(this).parents('.num1').find('.num').val()== ''){
+                alert('序号不能为空');
+                return false;
+            }
+            $(this).attr('disabled',true).val("上传中").css("background-color","#ccc");
+            var aa=$(this).parents('.num1').find('.checkShow').prop("checked");
+            var bb=$(this).parents('.num1').find('.checkShow2').prop("checked");
+            var cc=$(this).parents('.num1').find('.checkShow3').prop("checked");
+            var courseNameck=$('#courseName').val();
+            var typec=''
+            if(aa == true){
+                typec = 1
+            }else if(bb == true){
+                typec = 2
+            }else if(cc == true){
+                typec = 3
+            }
+            var kelb=$('#kcgl').val();
+            var courseAdd={
+                id:msg,
+                name:$("#courseName").val(),
+                imgUrl:$('.imgname').val(),
+                typeId:kelb,
+                isDisplay:$(".fn:checked").val(),
+                chapters:[{
+                        id:charid,   
+                        type:typec,
+                        url:$(this).parents('.num1').find('.urlz').val(),
+                        name:$(this).parents('.num1').find('.sName').val(),
+                        serial:$(this).parents('.num1').find('.num').val(),
+                        fileId:$(this).parents('.num1').find('.fileId').val(),
+                        status: static          
+                    }]
+            };    
+            $.ajax({
+                url: ip+"/course/update/"+msg,
+                dataType:'json',
+                type : 'PATCH', 
+                cache: false,
+                data : $.toJSON(courseAdd),
+                contentType:"application/json",
+                success: function(data) {
+                    if(data.flag == true){
+                        console.log(data)
+                    }else if(data.flag == false){
+                        alert(data.msg);
+                        return false;
+                    }
+                }
+            });
+        
+        })
+        function reaio(e){
+            if(e == 1){
+                $('.checkShow').attr("checked",true); 
+            }else if(e == 2){
+                $('.checkShow2').attr("checked",true); 
+            }else if(e == 3){
+                $('.checkShow3').attr("checked",true); 
+            }
+        }
+        //课程修改初始化部分
+        chapterList="";
+        $.ajax({
+            url:ip+"/course/getCourse/"+msg,
+            dataType:'json',
+            type:'GET',
+            cache:false,
+            contentType:'application/json',
+            success:function(data){
+                console.log(data);
+                if(data.data.isDisplay == 1){
+                    $('.fn').attr("checked","checked");
+                }else if(data.data.isDisplay == 0){
+                    $('.fn1').attr("checked","checked");
+                }
+                var kcgl=data.data.typeId;
+                var kclbd = sessionStorage.getItem("kclb");
+                var newkclbd=kclbd.split(',');
+                for(j=0;j<newkclbd.length;j++){
+                    if(newkclbd[j] == kcgl){
+                        $("#kcgl").get(0).selectedIndex = j;  
+                    }
+                }
+                $('.imgname').val(data.data.imgUrl);
+                $(".courseName").val(data.data.name);
+                if(data.data.imgUrl ==''){
+
+                }else{
+                    var imgUrl=ip+data.data.imgUrl;
+                    $('.imgshowimg').attr('src',imgUrl);
+                }
+                for(var i=0;i<data.data.chapters.length;i++){
+                    $("#addcontainer").append('<form><p class="num1 aa'+i+'">&nbsp;&nbsp;&nbsp;&nbsp;序号： <input type="text" name="num" class="num" value="'+data.data.chapters[i].serial+'"> 类型： <input type="radio" name="numType'+i+'" class="checkShow" value="0" class="PDF" />PDF<input type="radio" name="numType'+i+'" class="checkShow checkShow2" value="1" />视频<input type="radio" name="numType'+i+'" value="2" class="checkShow checkShow3" />考试 &nbsp;<span class="courseName1">章节名称： <input type="text" name="sName" class="sName" value="'+data.data.chapters[i].name+'" style="width: 100px;"/> </span><input type="button" name="upload_file" class="upload_file" value="选择文件" /> <input type="button" name="upload" class="upload" value="提交"/><input type="hidden" class="urlz" value="'+data.data.chapters[i].url+'"/><input type="hidden" class="zkcid" value="'+data.data.chapters[i].id+'"/><input type="hidden" class="fileId" value=""/><input type="hidden" class="qkcid" value=""/><span class="del" title="单击删除这一行" data-f="'+i+'">X</span></p></form>');
+                    var classa=".aa"+i;
+                    var index = data.data.chapters[i].type-1;
+                    $(classa).find('.checkShow').eq(index).attr('checked',true);
+                }
+            }
+        })
+        //以下是进行删除章节操作
+        function ref(){
+            window.location.href='editing.html';
+        }
+        // 以下是点击X号删除增加章节
+        $(document).on('click','.del',function(){
+            
+            var aa=$('.del').index(this);
+            console.log(aa);
+            if(aa == 0){
+                alert('最后一条了不能进行删除！');
+                return false;
+            }else{
+                var zkcid=$(this).parents('.num1').find('.zkcid').val();
+                var qkcid=$(this).parents('.num1').find('.qkcid').val();
+                var urlz=$(this).parents('.num1').find('.urlz').val();
+                if(qkcid != ''){
+                    delmsg3=$(this).parents('.num1').find('.qkcid').val();
+                }else if(zkcid != ''){
+                    delmsg3=$(this).parents('.num1').find('.zkcid').val();
+                }else{
+                    $(this).parents(".num1").remove();
+                    return false;
+                } 
+                $.ajax({
+                    url: ip+"/course/deleteChapter/"+delmsg3,
+                    dataType:'json',
+                    type : 'DELETE',
+                    cache: false,
+                    contentType:"application/json",
+                    success: function(data) {
+                        if(data.flag == true){
+                            alert('删除成功');
+                            $(this).parents(".num1").remove();
+                            setTimeout('ref();', 1000)
+                        }else{
+                            alert(data.msg);
+                            setTimeout('ref();', 1000)
+                        }
+                    }
+                })
+            }
+           
+           
+        })
+        //以下内容为课程类别获取
+        var courseType1="";
+        $.ajax({
+            url: ip+"/course/courseTypes",
+            type: "GET",
+            dataType: "json",
+            success: function(data) {
+                for(i=0;i<data.length;i++){
+                    courseType1 += '<option value='+data[i].id+'>'+data[i].name+'</option>';
+                }
+                $('#courseType').html(courseType1);
+            } 
+        });
+    </script>
+    <script>
+        //取消上传
+        $(document).on('click','.calloff',function(){
+            $('.wenjianc').hide();
+
+        })
+        $(document).on('click','.upload_file',function(){
+            $('.wenjianc').show();
+            var aa=$(this).parents('.num1').find('.checkShow').prop("checked");
+            var bb=$(this).parents('.num1').find('.checkShow2').prop("checked");
+            var cc=$(this).parents('.num1').find('.checkShow3').prop("checked");
+            $('.add').html('');
+            $('.fftype').html('');
+            var filename=''
+            fileaddress=$(this).parents('.num1').find('.urlz');
+            videoaddress=$(this).parents('.num1').find('.fileId');
+            qkcid=$(this).parents('.num1').find('.qkcid');
+            filename=$(this).parents('.num1').find('.sName');
+            num=$(this).parents('.num1').find('.num').val();
+            courseName=$('.courseName').val();
+            upload=$(this).parents('.num1').find('.upload');
+            static2=$(this).parents('.num1').find('.static').val();
+            zkcid=$(this).parents('.num1').find('.zkcid');
+            if(num == ''){
+                alert('序号不能为空！');
+                return false;
+            }
+            if(courseName == ''){
+                alert('课程名称不能为空！');
+                return false;
+            }
+            if(aa == true){
+                var zkcidz=$(this).parents('.num1').find('.zkcid').val();
+                $('.add').html('<div style="text-align:center;vertical-align:middel;"><form class="form1"><input type="hidden" name="chapterId" class="chapterId" value/><input type="file" name="pptFile" class="upfile" accept="application/pdf"></form><div class="surez clearfix"><input type="submit" name="Submit" value="确认" class="fiies"/><input type="submit" name="Submit" value="取消" class="calloff"/></div></div>');
+                $.ajax({
+                    url: ip+"/course/getChapterId",
+                    type: "GET",
+                    dataType: "json",
+                    success: function(data) {
+                        if(data.flag == true){
+                            $('.chapterId').val(data.data);
+                            qkcid.val(data.data)
+                        }else{
+                            alert(data.msg)
+                        }
+                    } 
+                });
+                $('.fiies').on('click',function(){
+                    $('.wenjianc').hide();
+                    if(zkcidz == ""){
+                       
+                        console.log($('.chapterId').val())
+                    }else{
+                        $('.chapterId').val('');
+                        console.log($('.chapterId').val())
+                    }
+                    $.ajax({
+                        url: ip+"/file/chapter/ppt",
+                        dataType:'json',
+                        data:new FormData($('.form1')[0]),
+                        type : 'post',
+                        cache: false,
+                        processData:false,
+                        contentType:false,
+                        beforeSend: function () {
+                            // 禁用按钮防止重复提交
+                        },
+                        success: function(result){
+
+                            if(result.flag == true){
+                                fileaddress.val(result.data)
+                               
+                                var str = $('.upfile').val()
+                                var arr = str.split("\\");
+                                var arr1 = arr.join(".");
+                                var arr2 = arr1.split(".");
+                                filename.val(arr2[2]);
+                            }else{
+                                alert(result.msg);
+                            }
+                        },
+                        complete: function () {
+                            //$('#saveLearnBtn').removeAttr("disabled");
+                        },
+                        error: function (data) {
+                            console.info("error: " + data.responseText);
+                        }
+                    })
+                })
+            }else if(bb == true){
+                var zkcidz=$(this).parents('.num1').find('.zkcid').val();
+                $('.add').html('<div style="text-align:center;vertical-align:middel;"><form class="form1"><input type="hidden" name="chapterId" class="chapterId" value/><input type="file" name="videoFile" class="upfile" accept="audio/mp4,video/mp4"></form><div class="surez clearfix"><input type="submit" name="Submit" value="确认" class="fiies"/><input type="submit" name="Submit" value="取消" class="calloff"/></div></div>');
+                $.ajax({
+                    url: ip+"/course/getChapterId",
+                    type: "GET",
+                    dataType: "json",
+                    success: function(data) {
+                        if(data.flag == true){
+                            $('.chapterId').val(data.data);
+                            qkcid.val(data.data)
+                        }else{
+                            alert(data.msg)
+                        }
+                    } 
+                });
+                $(document).on('change','.upfile',function(){
+                    var files = this.files;
+                    $('.filedname2').val(files[0].name);
+                    var videoarr=files[0].name.split('.');
+                    videoname=videoarr[0];
+                    filename.val(videoname);
+                })
+                $('.fiies').on('click',function(){
+                    var static='';
+                    var charid=''
+                    var courseNameck=$('#courseName').val();
+                    var newzkcidz=zkcidz;
+                    var newvideoname=videoname;
+                    var newnum=num;
+                    if(zkcidz == ""){
+                    }else{
+                        $('.chapterId').val(zkcidz);
+                    }
+                    newstatic=static2;
+                    if(newstatic == 'new'){
+                        static=0;
+                        charid=qkcid.val();
+                    }else{
+                        static=1;
+                        charid=zkcid.val();  
+                    }
+                    $('.wenjianc').hide();
+                    $.ajax({
+                        url: ip+"/file/chapter/video",
+                        dataType:'json',
+                        data:new FormData($('.form1')[0]),
+                        type : 'post',
+                        cache: false,
+                        processData:false,
+                        contentType:false,
+                        beforeSend: function () {
+                            // 禁用按钮防止重复提交
+                        },
+                        success: function(result){
+                            console.log(result,111)
+                            $('.wenjianc').hide();
+                            if(result.flag == true){
+                                fileaddress.val(result.data.sourceVideoUrl);
+                                videoaddress.val(result.data.fileId);
+                            }else{
+                                alert(result.msg);
+                            }
+                        },
+                        complete: function () {
+                            //$('#saveLearnBtn').removeAttr("disabled");
+                        },
+                        error: function (data) {
+                            console.info("error: " + data.responseText);
+                        }
+                    })
+                    //对视频进行操作
+                    upload.attr('disabled',true).val("上传中").css("background-color","#ccc");
+                    var courseAdd={
+                        id:msg,
+                        name:$("#courseName").val(),
+                        imgUrl:$('.imgname').val(),
+                        typeId:$('#kcgl').val(),
+                        isDisplay:$(".fn:checked").val(),
+                        chapters:[{
+                                id:charid,   
+                                type:2,
+                                url:'',
+                                name:newvideoname,
+                                serial:newnum,
+                                fileId:'',
+                                status: static          
+                            }]
+                    };    
+                    $.ajax({
+                        url: ip+"/course/update/"+msg,
+                        dataType:'json',
+                        type : 'PATCH', 
+                        cache: false,
+                        data : $.toJSON(courseAdd),
+                        contentType:"application/json",
+                        success: function(data) {
+                            if(data.flag == true){
+                                console.log(data)
+                            }else if(data.flag == false){
+                                alert(data.msg);
+                                return false;
+                            }
+                        }
+                    });
+                })
+            }else if(cc == true){
+                var zkcidz=$(this).parents('.num1').find('.zkcid').val();
+                $('.add').html('<div style="text-align:center;vertical-align:middel;"><form class="form1"><input type="hidden" name="chapterId" class="chapterId" value/><input type="file" name="excelFile" class="upfile" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"></form><div class="surez clearfix"><input type="submit" name="Submit" value="确认" class="fiies"/><input type="submit" name="Submit" value="取消" class="calloff"/></div></div>');
+                $.ajax({
+                    url: ip+"/course/getChapterId",
+                    type: "GET",
+                    dataType: "json",
+                    success: function(data) {
+                        if(data.flag == true){
+                            $('.chapterId').val(data.data);
+                            qkcid.val(data.data)
+                        }else{
+                            alert(data.msg)
+                        }
+                    } 
+                });
+                $('.fiies').on('click',function(){
+                    if(zkcidz == ""){
+                        console.log($('.chapterId').val())
+                    }else{
+                        $('.chapterId').val('');
+                        console.log($('.chapterId').val())
+                    }
+                    $('.wenjianc').hide();
+                    console.log( $('.chapterId').val())
+                    $.ajax({
+                        url: ip+"/file/chapter/excel",
+                        dataType:'json',
+                        data:new FormData($('.form1')[0]),
+                        type : 'post',
+                        cache: false,
+                        processData:false,
+                        contentType:false,
+                        beforeSend: function () {
+                            // 禁用按钮防止重复提交
+                        },
+                        success: function(result){
+                            if(result.flag == true){
+                                fileaddress.val(result.data.sourceVideoUrl)
+                                videoaddress.val(result.data.fileId);
+                                var str = $('.upfile').val()
+                                var arr = str.split("\\");
+                                var arr1 = arr.join(".");
+                                var arr2 = arr1.split(".");
+                                filename.val(arr2[2]);
+                            }else{
+                                alert(result.msg);
+                            }
+                        },
+                        complete: function () {
+                            //$('#saveLearnBtn').removeAttr("disabled");
+                        },
+                        error: function (data) {
+                            console.info("error: " + data.responseText);
+                        }
+                    })
+                })
+            }else{
+                $('.add').append('<div style="text-align:center;vertical-align:middel;"><form class="form1"><input type="file" name="imgFile" id="upfile" class="upfile" accept="image/jpg,image/png"></form><div class="surez clearfix"><input type="submit" name="Submit" value="确认" id="imgfile" class="fiies"/><input type="submit" name="Submit" value="取消" class="calloff"/></div></div>');
+                $('.fiies').on('click',function(){
+                    $.ajax({
+                        url: ip+"/file/course/image",
+                        dataType:'json',
+                        data:new FormData($('.form1')[0]),
+                        type : 'post',
+                        cache: false,
+                        processData:false,
+                        contentType:false,
+                        beforeSend: function () {
+                            // 禁用按钮防止重复提交
+                        },
+                        success: function(result){
+                            $('.wenjianc').hide();
+                            if(result.flag == true){
+                                $('.imgname').val(result.data);
+                                // $('.imgname2').html();
+                                var str = $('#upfile').val();
+                                var arr = str.split("\\");
+                                var arr1 = arr.join(".");
+                                var arr2 = arr1.split(".");
+                                $('.imgname2').html(arr2[2])
+                            }else{
+                                alert(result.msg);
+                            }
+                        },
+                        complete: function () {
+                            //$('#saveLearnBtn').removeAttr("disabled");
+                        },
+                        error: function (data) {
+                            console.info("error: " + data.responseText);
+                        }
+                    })
+                })
+            }
+        })
+    </script>
+    <script>
+        $(document).on('change','.upfile',function(){
+            var files = this.files;
+            $('.filedname2').val(files[0].name);
+        })
+    </script>
+    <script>
+        $(document).on('change','#upfile',function(){
+            var files = this.files;
+            var img = new Image();
+            var reader = new FileReader();
+            reader.readAsDataURL(files[0]);
+            reader.onload = function(e){
+                var mb = (e.total/1024)/1024;
+                if(mb>= 2){
+                    alert('文件大小大于2M');
+                    return;
+                }
+                img.src = this.result;
+                img.style.width = "80%";
+                document.getElementById('imgShow1').style.width="100px";
+                document.getElementById('imgShow1').style.height="80px";
+                document.getElementById('imgShow1').innerHTML = '';
+                document.getElementById('imgShow1').appendChild(img);
+                $('.imgshowimg').attr('src',this.result)
+            }
+        })
+    </script>
+</html>

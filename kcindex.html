@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>星融学院后台管理系统</title>
+		<link rel="stylesheet" type="text/css" href="css/reset.css" />
+		<link rel="stylesheet" type="text/css" href="css/public.css" />
+		<link rel="stylesheet" type="text/css" href="css/index.css" />
+		<link rel="stylesheet" type="text/css" href="css/page.css" />
+	</head>
+	<body>
+		<div class="header">
+			<span class="header-title">星融书院后台管理</span>
+			<span class="Login">登录</span>
+			<div class="nav">
+				<span><a href="kcindex.html" class="testb">课程管理</a></span>
+				<span><a href="Appindex.html">角色管理</a></span>
+			</div>
+		</div>
+		<div class="content">
+			<div class="content-left">
+				<ul class="left-nav">
+					<li>
+						<a href="kcindex.html" class="testa">全部课程</a>
+					</li>
+					<li>
+						<a href="recommendation.html">推荐课程</a>
+					</li>
+					<li>
+						<a href="courseType.html">课程类别</a>
+					</li>
+				</ul>
+			</div>
+			<div class="content-right">
+				<div class="content1">
+					<p class="line">课程管理>全部课程</p>
+					<a href="newAdd.html" class="but1">新增课程</a>
+					<table class="table">
+						<tr>
+							<td>id</td>
+							<td>课程名称</td>
+							<td>课程章节数</td>
+							<td>推荐</td>
+							<td>课程类型</td>
+							<td>操作</td>
+							<td style="width: 200px;">更新时间</td>
+						</tr>
+					</table>
+					<div id="setpage" style="text-align: center;padding: 20px 50px;color: #888;max-width: 630px"></div>
+					<input id='spage' type='hidden' value="1">
+					<input id='stotal' type='hidden' value="">
+					<input id='epage' type='hidden' value="10">
+					<input id='totalpage' type='hidden' value="">
+					<table class="tableck">
+						<tr>
+							<td colspan="7">
+								课程名称：<input type="text" name="courseName" id="courseName" list="mylist" /> 课程类别：
+								<select name="courseType" id="courseType" value="选择课程类型">
+									<option value="">请选择</option>
+								</select>
+								<input type="button" name="search" id="search" value="搜索" style="background-color: #1aaa31;border: solid 1px #1aaa31;border-radius: 3px;color: #fff" />
+							</td>
+						</tr>
+						<tr>
+							<td>id</td>
+							<td>课程名称</td>
+							<td>课程章节数</td>
+							<td>推荐</td>
+							<td>课程类型</td>
+							<td>操作</td>
+							<td style="width: 200px;">更新时间</td>
+						</tr>
+					</table>
+					<div class="weizhi">
+						<table class="table22">
+
+						</table>
+					</div>
+					</table>
+					<p class="tishi"></p>
+				</div>
+			</div>
+		</div>
+		<div class="fuceng">
+			<div class="fucengz">
+				<p class="fucetrue">确认删除么</p>
+				<div class="sure clearfix">
+					<input type="submit" name="Submit" value="确认" class="sures" />
+					<input type="submit" name="Submit" value="取消" class="calloff" />
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="js/jquery-1.11.0.min.js"></script>
+	<script type="text/javascript" src="js/jquery.json.js"></script>
+	<script type="text/javascript" src="js/ipconfig.js"></script>
+	<script type="text/javascript">
+		//有无登陆
+		username = sessionStorage.getItem("dlusername");
+		var denglu = username + ',你好<a href="index.html" style="padding-left:10px;color:#fff"><img src="images/loginOut.png" style="width:25px;height:25px;position:relative;top:7px;"></a>'
+		if(username == null) {
+			window.location.href = './index.html';
+		} else {
+			$('.Login').html(denglu);
+		}
+		//课程搜索里的课程类别
+		var role = [];
+		$.ajax({
+			url: ip + "/course/courseTypes",
+			type: "GET",
+			dataType: "json",
+			success: function(data) {
+				for(i = 0; i < data.length; i++) {
+					courseType += '<option value=' + data[i].id + '>' + data[i].name + '</option>';
+				}
+				$('#courseType').append(courseType);
+			}
+		});
+		var coursesc = '';
+
+		$('#search').on('click', function() {
+			$('.table22').html('');
+			dad = ''
+			var sccontent = new Object();
+			sccontent.page = 1;
+			sccontent.rows = 50;
+			sccontent.name = $('#courseName').val();
+			sccontent.typeId = $('#courseType').val();
+			$.ajax({
+				url: ip + "/course/list/" + $.toJSON(sccontent),
+				dataType: "json",
+				success: function(data) {
+					isDisplay = ['否', '是'];
+					if(data.rows.length == 0) {
+						$('.tishi').html('你搜索的课程名称或课程类别不存在')
+					} else {
+						for(var i = 0; i < data.rows.length; i++) {
+							dad += "<tr class='kctr'><td class='kcid'>" + data.rows[i].id + "</td><td>" + data.rows[i].name + "</td><td>" + data.rows[i].chaperNum + "</td><td>" + isDisplay[data.rows[i].isDisplay] + "</td><td>" + data.rows[i].typeName + "</td><td><a href='check.html' class='check' data-c='" + i + "' style='color:#5313f4'>查看 </a><a href='editing.html' class='edit' data-f='" + i + "' style='color:#5313f4'>编辑 </a><a href='javascript:;' class='del1' data-d='" + i + "' style='color:#5313f4'>删除</a></td><td style='width:200px'>" + data.rows[i].updateTime + "</td><tr>";
+							$('.tishi').html('')
+						}
+						$('.table22').append(dad)
+					}
+				}
+			});
+		})
+		courseList = "";
+		var indexGet = new Object();
+		indexGet.page = $('#spage').val();
+		indexGet.rows = $('#epage').val();
+		$.ajax({
+			url: ip + "/course/list/" + $.toJSON(indexGet),
+			dataType: "json",
+			success: function(data) {
+				//对分页中的总条数和页数进行赋值
+				$('#stotal').val(data.records);
+				$('#totalpage').val(data.total)
+				ids = [];
+				isDisplay = ['否', '是'];
+				courseName = [];
+				for(var i = 0; i < data.rows.length; i++) {
+					courseList += "<tr class='kctr'><td class='kcid'>" + data.rows[i].id + "</td><td>" + data.rows[i].name + "</td><td>" + data.rows[i].chaperNum + "</td><td>" + isDisplay[data.rows[i].isDisplay] + "</td><td>" + data.rows[i].typeName + "</td><td><a   href='check.html' class='check' data-c='" + i + "' style='color:#5313f4'>查看 </a><a href='editing.html'  class='edit' data-f='" + i + "' style='color:#5313f4'>编辑 </a><a href='javascript:;' class='del1' data-d='" + i + "' style='color:#5313f4'>删除</a></td><td style='width:200px'>" + data.rows[i].updateTime + "</td><tr>";
+
+				}
+				$(".table").children(":first").after(courseList);
+				//对分页的参数进行设置
+				var stotal = $('#stotal').val();
+				var epage = $('#epage').val();
+				var cpage = $('#spage').val();
+				var totalpage = $('#totalpage').val();
+				newpage(stotal, epage, totalpage);
+			}
+		});
+		//编辑按钮获取ID
+		$(document).on('click', '.edit', function() {
+			var id = $(this).parents('.kctr').find('.kcid').text();
+			sessionStorage.setItem("datat3", id);
+		})
+		//查看按钮获取ID
+		$(document).on('click', '.check', function() {
+			var id = $(this).parents('.kctr').find('.kcid').text();
+			sessionStorage.setItem("datacid2", id);
+		})
+		//以下内容为删除按钮Ajax接口
+		function ref() {
+			window.location.href = 'kcindex.html';
+		}
+		// 进行删除操作
+		$(document).on('click', '.del1', function() {
+			$('.fuceng').show();
+			var id = $(this).parents('.kctr').find('.kcid').text();
+			sessionStorage.setItem("datadel", id);
+		})
+		// 取消删除
+		$('.calloff').on('click', function() {
+			$('.fuceng').hide();
+		})
+		//确认删除
+		$('.sures').on('click', function() {
+			delmsg2 = sessionStorage.getItem("datadel");
+			$.ajax({
+				url: ip + "/course/delete/" + delmsg2,
+				dataType: 'json',
+				type: 'DELETE',
+				cache: false,
+				contentType: "application/json",
+				success: function(data) {
+					if(data.flag == true) {
+						alert('删除成功');
+						setTimeout('ref()', 1000);
+					} else {
+						alert('data.msg');
+						$('.fuceng').hide();
+					}
+				}
+			})
+		})
+		// })
+	</script>
+	<script>
+		function newpage(stotal, epage, totalpage) {
+			var totalpage, pagesize, cpage, count, curcount, outstr;
+			//初始化 
+
+			cpage = $('#spage').val();
+			pagesize = epage;
+			totalpage = totalpage;
+			outstr = "";
+			$(document).on('click', '.aa', function() {
+				$(".table").html('<tr><td>id</td><td>课程名称</td><td>课程章节数</td><td>推荐</td><td>课程类型</td><td>操作</td><td style="width: 200px;">更新时间</td></tr>');
+				cpage = $(this).index();
+				courseList = "";
+				var indexGet = new Object();
+				indexGet.page = cpage;
+				indexGet.rows = pagesize * 1;
+				$.ajax({
+					url: ip + "/course/list/" + $.toJSON(indexGet),
+					dataType: "json",
+					success: function(data) {
+						isDisplay = ['否', '是'];
+						for(var i = 0; i < data.rows.length; i++) {
+							courseList += "<tr class='kctr'><td class='kcid'>" + data.rows[i].id + "</td><td>" + data.rows[i].name + "</td><td>" + data.rows[i].chaperNum + "</td><td>" + isDisplay[data.rows[i].isDisplay] + "</td><td>" + data.rows[i].typeName + "</td><td><a   href='check.html' class='check' data-c='" + i + "'>查看 </a><a href='editing.html' class='edit' data-f='" + i + "'>编辑 </a><a href='javascript:;' class='del1' data-d='" + i + "'>删除</a></td><td style='width:200px'>" + data.rows[i].updateTime + "</td><tr>";
+							ids.push(data.rows[i].id)
+						}
+						$(".table").append(courseList)
+					}
+				});
+				setpage();
+			})
+
+			function setpage() {
+				if(totalpage) { //总页数小于十页 
+					for(count = 1; count <= totalpage; count++) {
+						outstr = outstr + "<a href='#' class='aa'  style='background: none repeat scroll 0 0 #ffffff;border: 1px solid #cccccc;color: #666666;display: inline-block;height: 29px;line-height: 28px;margin-left: 2px;padding: 0 12px;margin-left:5px;margin-right:5px;margin-bottom:10px'>" + count + "</a>";
+					}
+				}
+				document.getElementById("setpage").innerHTML = "<div id='setpage'><span style='font-size:12px;letter-spacing:10px;'>共" + totalpage + "页|第" + cpage + "页<\/span>" + outstr + "<\/div>";
+				outstr = "";
+			}
+			setpage();
+		}
+	</script>
+
+</html>

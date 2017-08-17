@@ -1,0 +1,58 @@
+.line{
+	position: relative;
+	top: 10px;
+	left: 10px;
+	padding-bottom: 10px;
+	width: 100%;
+	color: #999;
+	border-bottom: 1px #999 solid;
+}
+.content1 table{
+	margin: 40px 0 0 50px;
+	border: solid 1px #ccc;
+	max-height: 451px;
+	overflow: hidden;
+}
+.content1 table td{
+    width: 140px;
+	height: 40px;
+	line-height: 40px;
+	text-align: center;
+	border: solid 1px #ccc;
+	font-size: 14px;
+}
+.content1 .table1 td{
+	width: 120px;
+}
+.but1{
+	position: relative;
+	display: inline-block;
+	top: 20px;
+	left: 50px;
+	width: 120px;
+	height: 50px;
+	text-align: center;
+	color: #fff;
+	line-height: 50px;
+	background-color: #1aaa31;
+	border-radius: 5px; 
+}
+#search{
+	width: 60px;
+	height: 30px;
+	background-color: #1aaa31;
+	border: solid 1px #1aaa31;
+	border-radius: 3px;
+}
+#courseName{
+	width: 140px;
+	height: 30px;
+}
+#setpage .next{
+	background: none repeat scroll 0 0 #ffffff;border: 1px solid #cccccc;color: #666666;display: inline-block;height: 29px;line-height: 28px;margin-left: 2px;padding: 0 12px;margin-left:5px;margin-right:5px;margin-bottom:10px
+}
+#setpage .next.active{
+	background: #09F;
+    color: #FFF;
+    border-color: #09F;
+}

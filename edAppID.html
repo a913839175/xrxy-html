@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>星融学院后台管理系统</title>
+        <link rel="stylesheet" type="text/css" href="css/reset.css"/>
+        <link rel="stylesheet" type="text/css" href="css/public.css"/>
+        <link rel="stylesheet" type="text/css" href="css/edAppID.css"/>
+    </head>
+    <body>
+        <div class="header">
+            <span class="header-title">星融书院后台管理</span>
+            <span class="Login"><a href="login.html">登录</a></span>
+            <div class="nav">
+                <span><a href="kcindex.html">课程管理</a></span>
+                <span><a href="Appindex.html" class="testb">角色管理</a></span>
+            </div>
+        </div>
+        <div class="content">
+            <div class="content-left">
+                <ul class="left-nav">
+                    <li><a href="Appindex.html" class="testa">App角色</a></li>
+                    <li><a href="htindex.html">后台角色</a></li>
+                </ul>
+            </div>
+            <div class="content-right">
+                <p class="line">角色管理>App管理>编辑账号</p></span>
+                <div class="content1">
+                    <table>
+                        <form name="form1" action="#" method="post">
+                            <tr><th>基本内容</th></tr>
+                            <tr>
+                                <td>姓名：</td>
+                                <td>
+                                   <input type="text" class="username"> 
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>手机号：</td>
+                                <td class="telnum">
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>营业部</td>
+                                <td>
+                                    <select name="saledepa" class="saledepa">
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>职业</td>
+                                <td>
+                                    <select name="work" class="work">
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>类型：</td>
+                                <td class="change">
+                                    <input type="radio" name="tp" class="tp sts1" value="0"/>公众
+                                    <input type="radio" name="tp" class="tp sts2" value="1" />讲师
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>工号</td>
+                                <td >
+                                    <input type="text" class="number">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>邮箱</td>
+                                <td >
+                                    <input type="text" class="email">
+                                </td>
+                            </tr>
+                            <input type="hidden" value="" class="ids">
+                            <input type="hidden" value="" class="userid">
+                        </form>	
+                    </table> 
+                    <input type="submit" name="sub" id="sub" value="确定"/>
+                    <input type="button" name="but" id="but" value="取消" onclick="ref()" />
+                </div>
+            </div>
+        </div>
+    </body>
+    <script type="text/javascript" src="js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="js/jquery.json.js"></script>
+     <script type="text/javascript" src="js/ipconfig.js"></script>
+
+    <script type="text/javascript">
+        //单击取消返回到App角色列表
+        function ref(){
+            window.location.href='Appindex.html';
+        }
+        //有无登陆
+        username=sessionStorage.getItem("dlusername");
+       var denglu=username+',你好<a href="index.html" style="padding-left:10px;color:#fff"><img src="images/loginOut.png" style="width:25px;height:25px;position:relative;top:7px;"></a>'
+        if(username == null){
+            window.location.href='./index.html';
+        }else{
+            $('.Login').html(denglu);
+        }
+        //取ID
+        msg = sessionStorage.getItem("datat");
+        //取手机号
+        msgtel = sessionStorage.getItem("datatel2");
+        $('.telnum').html(msgtel);
+        //初始化数据
+        $.ajax({
+            url: ip+"/roleapp/getDeptAndPosition",
+            type: "GET",
+            dataType: "json",
+            success: function(data) {
+                for(var i=0;i<data.departments.length;i++){
+                    $('.saledepa').append("<option value="+data.departments[i].id+">"+data.departments[i].name+"</option>")
+                }
+                for(var i=0;i<data.positions.length;i++){
+                    $('.work').append("<option value="+data.positions[i].id+">"+data.positions[i].name+"</option>")
+                }
+            } 
+        });
+        $.ajax({
+            url: ip+"/roleapp/list/1/1/"+msgtel,
+            type: "GET",
+            dataType: "json",
+            success: function(data) {
+                console.log(data)
+                $('.ids').val(data.rows[0].id)
+                $('.userid').val(data.rows[0].userId)
+                msgzt=data.rows[0].roleTypeName;
+                deptId=data.rows[0].deptId;
+                rank=data.rows[0].rank;
+                $('.username').val(data.rows[0].userName);
+                $('.saledepa').val(data.rows[0].deptId);
+                $('.work').val(data.rows[0].rank);
+                $('.number').val(data.rows[0].jobNo);
+                $('.email').val(data.rows[0].mail);
+                if(msgzt == "公众"){
+                    $('.sts1').attr("checked","checked");
+                }else if(msgzt == "讲师"){
+                    $('.sts2').attr("checked","checked");
+                }
+            } 
+        });
+        // 进行修改的操作
+        $('#sub').on('click',function(){
+            username=$('.username').val();
+            iphone=$('.telnum').text();
+            saledepa=$('.saledepa').val();
+            work=$('.work').val();
+            rolez=$(".tp:checked").val();
+            jobNo= $('.number').val()   
+            var roleAppptype = new Object();
+            var Params = {
+                id:$('.ids').val(),
+                mobile:iphone,
+                roleType:rolez,
+                userName:username,
+                deptId:saledepa,
+                rank:work,
+                jobNo:jobNo,
+                mail:$('.email').val(),
+                userId:$('.userid').val(),
+            }
+            if(username == ''){
+                alert('姓名不能为空！');
+                return false;
+            }else if(jobNo.length > 5){
+                alert('工号不能大于5位');
+                return false;
+            }else{
+                $.ajax({
+                    url: ip+"/roleapp/update/"+$('.ids').val(),
+                    type: "PATCH",
+                    dataType: "json",
+                    cache: false,
+                    data: JSON.stringify(Params),
+                    contentType:"application/json",
+                    success:function(data){
+                        if(data.flag){
+                            alert('修改成功');
+                            setTimeout('ref();', 1000);
+                        }else{
+                            alert(data.msg);
+                        }
+                    },
+                    error: function(data) {
+                        console.log(data);
+                    }
+                })    
+            }
+        })
+    </script>
+</html>

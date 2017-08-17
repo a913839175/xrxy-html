@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="apple-touch-fullscreen" content="yes" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+    <meta name="description" content="星融学院后台管理系统" />
+    <title>星融学院后台管理系统</title>
+    <link rel="stylesheet" type="text/css" href="css/pintuer.css">
+    <link rel="stylesheet" type="text/css" href="css/Login.css">
+</head>
+<body>
+<div class="bg"></div>
+<div class="container">
+    <div class="line bouncein">
+        <div class="xs6 xm4 xs3-move xm4-move">
+            <div style="height:170px;"></div>                  
+            <form action="index.html" method="post">
+                <div class="panel loginbox">
+                    <div class="text-center margin-big padding-big-top"><h1>星融学院后台管理系统</h1></div>
+                    <div class="panel-body" style="padding:30px; padding-bottom:10px; padding-top:10px;">
+                        <div class="form-group">
+                            <div class="field field-icon-right">
+                                <input type="text" class="input input-big" name="name" id="login-user" placeholder="登录账号" data-validate="required:请填写账号" />
+                                <span class="icon icon-user margin-small"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="field field-icon-right">
+                                <input type="password" class="input input-big" name="password" id="login-pwd" placeholder="登录密码" data-validate="required:请填写密码" />
+                                <span class="icon icon-key margin-small"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="padding:30px;">
+                        <button type="button" class="button button-block bg-main text-big input-big" id="sub-btn">登录</button>
+                    </div>
+                </div>
+            </form>          
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="js/jquery-1.11.0.min.js"></script>
+<script type="text/javascript" src="js/jquery.json.js"></script>
+<script type="text/javascript" src="js/utils.js"></script>
+</body>
+<script type="text/javascript">
+    //以下内容为登录页表单验证部分
+    $("#sub-btn").click(function() {
+        var userName = $("#login-user").val(),
+            passWord = $("#login-pwd").val(),
+            Data = {
+                userName: userName,
+                password: passWord
+            };
+        $.ajax({
+            url: util.baseUrl + "/login",
+            type: "POST",
+            dataType: "json",
+            data: JSON.stringify(Data),
+            contentType:"application/json",
+            success: function(data) {
+                // console.log(d);
+                if (data.flag) {
+                    sessionStorage.setItem("dlusername",data.data.userName);
+                    location.href = './kcindex.html';
+                } else{
+                    util.showMsg(data.msg);
+                }
+            },
+            error: function(data) {
+                console.log(data);
+            }
+        });
+    });
+    $("#login-user").add("#login-pwd").keydown(function(e) {
+        if (e.which == 13) {
+            $("#sub-btn").trigger("click");
+        }
+    });
+    $('.field input').bind('input propertychange', function() {    
+        var value = $(this).val();
+        var validate = $(this).attr('data-validate');
+        if(value==""){
+            $(this).parents(".form-group").addClass('check-error');
+            $(this).parents(".form-group").find('.input-help').html(validate);
+        }else{
+           $(this).parents(".form-group").removeClass('check-error'); 
+        }           
+    })
+</script>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>星融学院后台管理系统</title>
+        <link rel="stylesheet" type="text/css" href="css/reset.css"/>
+        <link rel="stylesheet" type="text/css" href="css/public.css"/>
+        <link rel="stylesheet" type="text/css" href="css/Appindex.css"/>
+    </head>
+    <body>
+        <div class="header">
+            <span class="header-title">星融书院后台管理</span>
+            <span class="Login"><a href="login.html">登录</a></span>
+            <div class="nav">
+                <span><a href="kcindex.html" class="testb">课程管理</a></span>
+                <span><a href="Appindex.html">角色管理</a></span>
+            </div>
+        </div>
+        <div class="content">
+            <div class="content-left">
+                <ul class="left-nav">
+                    <li><a href="kcindex.html" class="testa">全部课程</a></li>
+                    <li><a href="recommendation.html">推荐课程</a></li>
+                    <li><a href="courseType.html">课程类别</a></li>
+                </ul>
+            </div>
+            <div class="content-right">
+            <p class="line">课程管理>全部课程>查看课程</p>
+                <div class="content1">
+                   
+                    <table class="table">
+                        <tr>
+                            <td>章节序号</td>
+                            <td>章节名称</td>
+                            <td>类型</td>
+                            <td>上传时间</td>
+                        </tr>
+
+
+                    </table>	
+                </div>
+            </div>
+        </div>
+    </body>
+    <script type="text/javascript" src="js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="js/jquery.json.js"></script>
+     <script type="text/javascript" src="js/ipconfig.js"></script>
+    <script type="text/javascript">
+        //有无登陆
+        username=sessionStorage.getItem("dlusername");
+       var denglu=username+',你好<a href="index.html" style="padding-left:10px;color:#fff"><img src="images/loginOut.png" style="width:25px;height:25px;position:relative;top:7px;"></a>'
+        if(username == null){
+            window.location.href='./index.html';
+        }else{
+            $('.Login').html(denglu);
+        }
+        listchapter="";
+        datacid2 = sessionStorage.getItem("datacid2");
+        $.ajax({
+            url: ip+"/course/listchapter/1/100/"+datacid2,
+            dataType:'json',
+            type : 'GET',
+            cache: false,
+            contentType:"application/json",
+            success: function(data) {
+                for( var i=0;i<data.rows.length;i++){
+                    listchapter+="<tr><td>"+data.rows[i].serial+"</td><td>" + data.rows[i].name + "</td><td>" + data.rows[i].type + "</td><td>" + data.rows[i].updateTime + "</td></tr>";
+                }
+                $(".table").children(":first").after(listchapter);
+            }
+        });
+    </script>
+</html>
